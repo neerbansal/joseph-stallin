@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="eng">
+
+<head>
+  <meta charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Invincible OS - Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Russo+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --fg: #eaf0f6;
+      --accent: #5ec8ff;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --window-bg: rgba(20, 24, 32, 0.88);
+      --taskbar-bg: rgba(10, 12, 18, 0.78);
+    }
+
+    [data-theme="light"] {
+      --bg: #eef1f6;
+      --fg: #10141c;
+      --accent: #2469c9;
+      --glass: rgba(255, 255, 255, 0.5);
+      --glass-border: rgba(0, 0, 0, 0.12);
+      --window-bg: rgba(255, 255, 255, 0.88);
+      --taskbar-bg: rgba(255, 255, 255, 0.78);
+    }
+
+    /* ---------- BOOT SCREEN ---------- */
+    #boot-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity .5s ease, visibility .5s;
+    }
+
+    #boot-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .boot-title {
+      font-size: 2.4rem;
+      letter-spacing: .3em;
+      margin: 0;
+      color: var(--accent);
+      text-shadow: 0 0 25px var(--accent);
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    .boot-sub {
+      opacity: .6;
+      margin-top: .8rem;
+      font-size: .9rem;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .6;
+      }
+    }
+
+    /* ---------- DESKTOP ---------- */
+    #desktop {
+      height: 100%;
+      width: 100%;
+      position: relative;
+      background-image: url('assets/wallpaper.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
+    #desktop.hidden {
+      display: none;
+    }
+
+    #desktop::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.25);
+      pointer-events: none;
+    }
+
+
+    .workspace {
+      position: absolute;
+      inset: 0;
+      padding: 1.2rem;
+      z-index: 2;
+    }
+
+    .app-icon {
+      width: 72px;
+      text-align: center;
+      cursor: pointer;
+      padding: .4rem;
+      border-radius: 12px;
+    }
+
+    .app icon:hover {
+      background: var(--glasa);
+    }
+
+    .icon-img {
+      width: 42px;
+      height: 42px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .icon-emoji {
+      font-size: 2rem;
+      display: block
+    }
+
+    .widget-zone {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2;
+      z-index: 2
+    }
+
+    .glass.widget background:var(--glass);
+    border:1px solid var(-glass-border);
+    border-radius:16px;
+    padding:.8rem 1.2rem;
+    backdrop-filter:blur(12px);
+    text-allign: center;
+    }
+
+    .widget-title {
+      font-size: .65rem;
+      letter-spacing: .15em;
+      opacity: .6;
+      margin: 0 .2rem;
+    }
+
+    #system-clock {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+
+    #widget-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none
+    }
+
+    .brand-widget {
+      position: absolute;
+      width: 280px;
+      display: flex-direction:column;
+      align-items: center;
+      cursor: grab;
+      touch-action: none;
+      pointer-events: auto;
+      filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+      animation: widgetFloat 5s ease-in-out infinite, widgetGlow 3s ease-in-out infinite;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64. 1), filter0.12s ease;
+      ;
+
+      .brand-widgwt:active {
+        cursor: grabbing;
+      }
+
+      .brand-widget.dragging {
+        transform: scale(1.06);
+        filter: drop-shadow(0 18px 45px rgba(94, 200, 255, 0.45));
+        transform: transform 0.12s cubic-bezie(0.34, 1.56, 0.64, 1), filter0.12s ease;
+        z-index: 100. !important;
+      }
+
+      .brand-widget img {
+        width: 100%;
+        display: block;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      .brand-widget .brand-caption {
+        margin-top: 6px;
+        width: 100%;
+      }
+
+      .brand-clock-overlay {
+        positon: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        pointer-events: none;
+        z-index: 10;
+        padding: 0 10px;
+      }
+
+      .brand-time {
+        font-family: 'Russo One', 'Impact', 'Ariel Black', sans-serif;
+        font-size: 2.6rem;
+        colour: #ffffff;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.95), 0 0 24px rgba(0, 0, 0, 0.6);
+      }
+
+      .brand-zone {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.2rem;
+        color: #ffffff;
+        -webkit-text-stroke: 1.2px #000000;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+        letter-spacing: 0.18em;
+        margin-top: 4px;
+      }
+
+      @keyframes widgetFloat {
+
+        0%,
+        100% {
+          margin-top: 0px;
+        }
+
+        50% {
+          margin-top: -8px;
+        }
+      }
+
+      @keyframes widgetGlow {
+
+        0%,
+        100% {
+          filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+        }
+
+        50% {
+          filter: drop-shadow(0 14px 32px rgba(94, 200, 255, 0.3));
+        }
+      }
+
+
+
+      /* ---------- WINDOWS ---------- */
+      #window-layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .window {
+        position: absolute;
+        min-width: 260px;
+        min-height: 180px;
+        background: var(--window-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(16px);
+        overflow: hidden;
+        pointer-events: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .window-titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .5rem .8rem;
+        background: var(--glass);
+        cursor: grab;
+        touch-action: none;
+      }
+
+      .window-titlebar:active {
+        cursor: grabbing;
+      }
+
+      .window-title {
+        font-size: .8rem;
+        font-weight: 600;
+        opacity: .85;
+      }
+
+      .window-controls {
+        display: flex;
+        gap: .4rem;
+      }
+
+      .win-btn {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .7rem;
+        cursor: pointer;
+        background: rgba(255, 90, 90, .85);
+        color: #fff;
+        transition: transform 0.15s ease;
+      }
+
+      .win-btn:active {
+        transform: scale(0.9);
+      }
+
+      .window-body {
+        flex: 1;
+        overflow: auto;
+        padding: .8rem;
+        font-size: .85rem;
+      }
+
+      /* ---------- TASKBAR ---------- */
+      .taskbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: var(--taskbar-bg);
+        backdrop-filter: blur(14px);
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+        z-index: 5;
+      }
+
+      .everything-btn,
+      .dock-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: var(--glass);
+        transition: transform 0.15s ease, background 0.2s ease;
+      }
+
+      .everything-btn:hover,
+      .dock-icon:hover {
+        background: var(--glass-border);
+        transform: scale(1.08);
+      }
+
+      .everything-btn:active,
+      .dock-icon:active {
+        transform: scale(0.95);
+      }
+
+      .tools-dock {
+        display: flex;
+        gap: .6rem;
+      }
+
+
+      /* ---------- TERMINAL APP ---------- */
+      .terminal-app {
+        background: #000;
+        color: #7CFC9B;
+        font-family: monospace;
+        font-size: .8rem;
+        height: 100%;
+        padding: .6rem;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .terminal-output {
+        flex: 1;
+        overflow-y: auto;
+        white-space: pre-wrap;
+      }
+
+      .terminal-line {
+        display: flex;
+        gap: .4rem;
+      }
+
+      .terminal-prompt {
+        color: #5ec8ff;
+      }
+
+      .terminal-input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: #7CFC9B;
+        font-family: monospace;
+        font-size: .8rem;
+      }
+
+      /* ---------- NOTES APP ---------- */
+      .notes-app {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .notes-textarea {
+        flex: 1;
+        resize: none;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--fg);
+        font-size: .9rem;
+        font-family: inherit;
+      }
+
+      .notes-status {
+        font-size: .65rem;
+        opacity: .5;
+        text-align: right;
+      }
+  </style>
+</head>
+
+<body>
+
+  <div id="boot-screen">
+    <div class="boot-content">
+      <h1 class="boot-title">INVINCIBLE OS</h1>
+      <p class="boot-sub">tap anywhere to enter — no password needed</p>
+    </div>
+  </div>
+  <div id="desktop" class="hidden">
+
+    <div class="workspace">
+      <div class="apps-zone" id="appsZone"></div>
+      <div class="widgets-zone" id="widgetsZone">
+        <div class="glass-widget">
+          <h4 class="widget-title">SYSTEM</h4>
+          <div id="system-clock">00:00</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="widget-layer"></div>
+    <div id="window-layer"></div>
+
+    <div class="taskbar">
+      <div class="everything-btn" id="everythingBtn">
+        <img src="assets/icons/everything.png" class="icon-img" alt="apps"
+          onerror="this.outerHTML='<span class=icon-emoji>🌐</span>'">
+      </div>
+      <div class="tools-dock" id="toolsDock">
+        <div class="dock-icon" id="themeToggle">
+          <span class="icon-emoji">🌙</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  /* ===== THEME ===== */
+  function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('invincibleos_theme', theme);
+  document.getElementById('themeToggle').innerHTML =
+  theme === 'light' ? '<span class="icon-emoji">☀️</span>' : '<span class="icon-emoji">🌙</span>';
+  }
+  function initTheme(){
+  applyTheme(localStorage.getItem('invincibleos_theme') || 'dark');
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'light' ? 'dark' : 'light');
+  });
+  }
+
+  /* ===== BOOT SCREEN ===== */
+  function initBoot(){
+  const boot = document.getElementById('boot-screen');
+  const desktop = document.getElementById('desktop');
+  boot.addEventListener('click', ()=>{
+  boot.classList.add('fade-out');
+  setTimeout(()=>{ boot.style.display='none'; desktop.classList.remove('hidden'); }, 500);
+  }, { once:true });
+  }
+
+  /* ===== CLOCK + TIMEZONE ===== */
+  function updateClock(){
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const timeStr = `${h}:${m}`;
+
+  const sysClock = document.getElementById('system-clock');
+  if (sysClock) sysClock.textContent = timeStr;
+
+  const brandTime = document.getElementById('brand-time');
+  const brandZone = document.getElementById('brand-zone');
+  if (brandTime) brandTime.textContent = timeStr;
+  if (brandZone) {
+  const tzAbbr = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop();
+  brandZone.textContent = tzAbbr || 'UTC';
+  }
+  }
+
+  /* ===== GENERIC DRAG HELPER (Viewport Containment + Touch) ===== */
+  function makeDraggableEl(el, handle, onMove){
+  let offsetX=0, offsetY=0, dragging=false;
+
+  function startDrag(clientX, clientY){
+  dragging = true;
+  el.classList.add('dragging');
+  offsetX = clientX - el.offsetLeft;
+  offsetY = clientY - el.offsetTop;
+  }
+
+  function moveDrag(clientX, clientY){
+  if (!dragging) return;
+  let newLeft = clientX - offsetX;
+  let newTop = clientY - offsetY;
+
+  /* BUG FIX 1: Viewport boundary clamps */
+  const maxLeft = window.innerWidth - el.offsetWidth;
+  const maxTop = window.innerHeight - el.offsetHeight;
+  newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+  newTop = Math.max(0, Math.min(newTop, maxTop));
+
+  el.style.left = newLeft + 'px';
+  el.style.top = newTop + 'px';
+  }
+
+  function endDrag(){
+  if (!dragging) return;
+  dragging = false;
+  el.classList.remove('dragging');
+  if (onMove) onMove(el.style.left, el.style.top);
+  }
+
+  /* Pointer events */
+  handle.addEventListener('pointerdown', (e)=>{
+  handle.setPointerCapture(e.pointerId);
+  startDrag(e.clientX, e.clientY);
+  });
+  handle.addEventListener('pointermove', (e)=>{
+  moveDrag(e.clientX, e.clientY);
+  });
+  handle.addEventListener('pointerup', ()=> endDrag());
+  handle.addEventListener('pointercancel', ()=> endDrag());
+
+  /* BUG FIX 3: Native touch event mapping with passive options */
+  handle.addEventListener('touchstart', (e)=>{
+  if (e.touches.length === 1) {
+  const t = e.touches[0];
+  startDrag(t.clientX, t.clientY);
+  }
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', (e)=>{
+  if (e.touches.length === 1) {
+  e.preventDefault();
+  const t = e.touches[0];
+  moveDrag(t.clientX, t.clientY);
+  }
+  }, { passive: false });
+
+  handle.addEventListener('touchend', ()=> endDrag(), { passive: true });
+  handle.addEventListener('touchcancel', ()=> endDrag(), { passive: true });
+  }
+
+  /* ===== BRAND WIDGET (bigger, animated, dead-center clock) ===== */
+  function initBrandWidget(){
+  const layer = document.getElementById('widget-layer');
+  const wrap = document.createElement('div');
+  wrap.className = 'brand-widget';
+  wrap.innerHTML = `
+  <img src="assets/brand-widget.png" alt="Invincible OS by PRON33R Universe">
+  <div class="brand-clock-overlay">
+    <div class="brand-time" id="brand-time">00:00</div>
+    <div class="brand-zone" id="brand-zone">UTC</div>
+  </div>
+  <img class="brand-caption" src="assets/brand-caption.png" alt="litrelly doing anything a.t.p.">
+  `;
+  layer.appendChild(wrap);
+
+  const saved = JSON.parse(localStorage.getItem('invincibleos_brandPos') || 'null');
+  wrap.style.left = (saved ? saved.left : '24px');
+  wrap.style.top = (saved ? saved.top : '90px');
+
+  makeDraggableEl(wrap, wrap, (left, top)=>{
+  localStorage.setItem('invincibleos_brandPos', JSON.stringify({ left, top }));
+  });
+  }
+
+
+  /* ===== WINDOW MANAGER ===== */
+  const WM = {
+  zIndex: 10,
+  windows: {},
+
+  open(appId){
+  if (this.windows[appId]) { this.focus(appId); return; }
+  const app = APP_REGISTRY[appId];
+  const win = document.createElement('div');
+  win.className = 'window';
+
+  const offset = Object.keys(this.windows).length * 30;
+  const rawW = parseInt(app.width || '320', 10);
+  const rawH = parseInt(app.height || '240', 10);
+  let left = 60 + offset;
+  let top = 60 + offset;
+  left = Math.min(left, Math.max(0, window.innerWidth - rawW));
+  top = Math.min(top, Math.max(0, window.innerHeight - rawH - 64));
+
+  win.style.left = left + 'px';
+  win.style.top = top + 'px';
+  win.style.width = app.width || '320px';
+  win.style.height = app.height || '240px';
+  win.innerHTML = `
+  <div class="window-titlebar" data-app="${appId}">
+    <span class="window-title">${app.title}</span>
+    <div class="window-controls">
+      <div class="win-btn" data-close="${appId}">✕</div>
+    </div>
+  </div>
+  <div class="window-body">${app.render()}</div>
+  `;
+  document.getElementById('window-layer').appendChild(win);
+  this.windows[appId] = { el: win };
+  makeDraggableEl(win, win.querySelector('.window-titlebar'), ()=> this.saveState());
+  win.querySelector('.window-titlebar').addEventListener('pointerdown', ()=> this.focus(appId));
+  win.querySelector('[data-close]').addEventListener('click', ()=> this.close(appId));
+  this.focus(appId);
+  if (app.afterMount) app.afterMount(win);
+  this.saveState();
+  },
+
+  close(appId){
+  if (!this.windows[appId]) return;
+  this.windows[appId].el.remove();
+  delete this.windows[appId];
+  this.saveState();
+  },
+
+  focus(appId){
+  const w = this.windows[appId];
+  if (!w) return;
+  this.zIndex++;
+  w.el.style.zIndex = this.zIndex;
+  },
+
+  saveState(){
+  const state = {};
+  for (const id in this.windows){
+  const el = this.windows[id].el;
+  state[id] = { left: el.style.left, top: el.style.top };
+  }
+  localStorage.setItem('invincibleos_windows', JSON.stringify(state));
+  },
+
+  restoreState(){
+  const raw = localStorage.getItem('invincibleos_windows');
+  if (!raw) return;
+  const state = JSON.parse(raw);
+  for (const id in state){
+  if (!APP_REGISTRY[id]) continue;
+  this.open(id);
+  const el = this.windows[id].el;
+  el.style.left = state[id].left;
+  el.style.top = state[id].top;
+  }
+  }
+  };
+
+  /* ===== APPS ===== */
+  const APP_REGISTRY = {
+  terminal: {
+  title: 'Terminal', width: '340px', height: '260px',
+  render(){
+  return `
+  <div class="terminal-app">
+    <div class="terminal-output" id="term-output">Invincible OS Terminal v0.1
+      Type "help" to see available commands.
+    </div>
+    <div class="terminal-line">
+      <span class="terminal-prompt">guest@invincibleos:~$</span>
+      <input class="terminal-input" id="term-input" autocomplete="off">
+    </div>
+  </div>`;
+  },
+  afterMount(win){
+  const input = win.querySelector('#term-input');
+  const output = win.querySelector('#term-output');
+  const print = (txt)=>{ output.textContent += txt + '\n'; output.scrollTop = output.scrollHeight; };
+  const commands = {
+  help: ()=> 'Commands: help, whoami, date, clear, echo [text], theme, apps, exit',
+  whoami: ()=> 'guest@invincibleos',
+  date: ()=> new Date().toString(),
+  clear: ()=> { output.textContent=''; return null; },
+  theme: ()=> { document.getElementById('themeToggle').click(); return 'theme switched'; },
+  apps: ()=> Object.keys(APP_REGISTRY).join(', '),
+  exit: ()=> { WM.close('terminal'); return null; }
+  };
+  input.addEventListener('keydown', (e)=>{
+  if (e.key !== 'Enter') return;
+  const raw = input.value.trim();
+  input.value = '';
+  if (!raw) return;
+  print(`guest@invincibleos:~$ ${raw}`);
+  const [cmd, ...rest] = raw.split(' ');
+  if (cmd === 'echo') { print(rest.join(' ')); return; }
+  if (commands[cmd]) { const res = commands[cmd](); if (res) print(res); }
+  else print(`command not found: ${cmd}`);
+  });
+  }
+  },
+
+  notes: {
+  title: 'Notes', width: '300px', height: '260px',
+  render(){
+  return `
+  <div class="notes-app">
+    <textarea class="notes-textarea" id="notes-text" placeholder="Type your notes..."></textarea>
+    <div class="notes-status" id="notes-status">saved</div>
+  </div>`;
+  },
+  afterMount(win){
+  const textarea = win.querySelector('#notes-text');
+  const status = win.querySelector('#notes-status');
+  textarea.value = localStorage.getItem('invincibleos_notes') || '';
+  let timer;
+  textarea.addEventListener('input', ()=>{
+  status.textContent = 'saving...';
+  clearTimeout(timer);
+  timer = setTimeout(()=>{
+  localStorage.setItem('invincibleos_notes', textarea.value);
+  status.textContent = 'saved';
+  }, 400);
+  });
+  }
+  }
+  };
+
+
+  /* ===== DESKTOP ICONS ===== */
+  function buildDesktopIcons(){
+  const zone = document.getElementById('appsZone');
+  const icons = {
+  terminal: { terminal.png, label:'Terminal' },
+  notes: { notes.png', label:'Notes' }
+  };
+  for (const id in icons){
+  const div = document.createElement('div');
+  div.className = 'app-icon';
+  div.innerHTML = `
+  <img src="assets/icons/${id}.png" class="icon-img" alt="${icons[id].label}"
+    onerror="this.outerHTML='<span class=icon-emoji>${icons[id].emoji}</span>'">
+  <span class="label">${icons[id].label}</span>`;
+  div.addEventListener('click', ()=> WM.open(id));
+  zone.appendChild(div);
+  }
+  }
+
+  function initEverythingBtn(){
+  document.getElementById('everythingBtn').addEventListener('click', ()=>{
+  const choice = prompt('Open app: ' + Object.keys(APP_REGISTRY).join(', '));
+  if (choice && APP_REGISTRY[choice]) WM.open(choice);
+  });
+  }
+
+  /* ===== INIT ===== */
+  window.addEventListener('DOMContentLoaded', ()=>{
+  initTheme();
+  initBoot();
+  buildDesktopIcons();
+  initBrandWidget();
+  initEverythingBtn();
+  updateClock();
+  setInterval(updateClock, 1000);
+  WM.restoreState();
+  });
+  </script>
+</body>
+
+</html>
