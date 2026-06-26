@@ -23,42 +23,138 @@ function initBoot(){
   }, { once:true });
 }
 
-/* ===== CLOCK ===== */
+/* ===== MATRIX RAIN ===== */
+function initMatrixRain() {
+  const canvas = document.getElementById('matrix-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = [];
+  
+  for (let i = 0; i < columns; i++) {
+    drops[i] = Math.random() * -100;
+  }
+  
+  function draw() {
+    ctx.fillStyle = 'rgba(11, 14, 20, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#5ec8ff';
+    ctx.font = fontSize + 'px monospace';
+    
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars.charAt(Math.floor(Math.random() * chars.length));
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  
+  const interval = setInterval(draw, 33);
+  
+  document.getElementById('boot-screen').addEventListener('click', () => {
+    clearInterval(interval);
+  });
+}
+
+/* ===== CLOCK + TIMEZONE (Brand Widget Only) ===== */
 function updateClock(){
   const now = new Date();
   const h = String(now.getHours()).padStart(2,'0');
   const m = String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('system-clock').textContent = `${h}:${m}`;
+  const timeStr = `${h}:${m}`;
+
+  const brandTime = document.getElementById('brand-time');
+  const brandZone = document.getElementById('brand-zone');
+  if (brandTime) brandTime.textContent = timeStr;
+  if (brandZone) {
+    const tzAbbr = new Date().toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ').pop();
+    brandZone.textContent = tzAbbr || 'UTC';
+  }
 }
 
-/* ===== GENERIC DRAG HELPER ===== */
+/* ===== GENERIC DRAG HELPER (Viewport Containment + Touch) ===== */
 function makeDraggableEl(el, handle, onMove){
   let offsetX=0, offsetY=0, dragging=false;
-  handle.addEventListener('pointerdown', (e)=>{
+
+  function startDrag(clientX, clientY){
     dragging = true;
-    offsetX = e.clientX - el.offsetLeft;
-    offsetY = e.clientY - el.offsetTop;
+    el.classList.add('dragging');
+    offsetX = clientX - el.offsetLeft;
+    offsetY = clientY - el.offsetTop;
+  }
+
+  function moveDrag(clientX, clientY){
+    if (!dragging) return;
+    let newLeft = clientX - offsetX;
+    let newTop  = clientY - offsetY;
+
+    const maxLeft = window.innerWidth - el.offsetWidth;
+    const maxTop  = window.innerHeight - el.offsetHeight;
+    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    newTop  = Math.max(0, Math.min(newTop, maxTop));
+
+    el.style.left = newLeft + 'px';
+    el.style.top  = newTop + 'px';
+  }
+
+  function endDrag(){
+    if (!dragging) return;
+    dragging = false;
+    el.classList.remove('dragging');
+    if (onMove) onMove(el.style.left, el.style.top);
+  }
+
+  handle.addEventListener('pointerdown', (e)=>{
     handle.setPointerCapture(e.pointerId);
+    startDrag(e.clientX, e.clientY);
   });
   handle.addEventListener('pointermove', (e)=>{
-    if (!dragging) return;
-    el.style.left = (e.clientX - offsetX) + 'px';
-    el.style.top = (e.clientY - offsetY) + 'px';
+    moveDrag(e.clientX, e.clientY);
   });
-  handle.addEventListener('pointerup', ()=>{
-    dragging = false;
-    if (onMove) onMove(el.style.left, el.style.top);
-  });
+  handle.addEventListener('pointerup', ()=> endDrag());
+  handle.addEventListener('pointercancel', ()=> endDrag());
+
+  handle.addEventListener('touchstart', (e)=>{
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      startDrag(t.clientX, t.clientY);
+    }
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', (e)=>{
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const t = e.touches[0];
+      moveDrag(t.clientX, t.clientY);
+    }
+  }, { passive: false });
+
+  handle.addEventListener('touchend', ()=> endDrag(), { passive: true });
+  handle.addEventListener('touchcancel', ()=> endDrag(), { passive: true });
 }
 
-/* ===== BRAND WIDGET (your logo + caption, moves as one piece) ===== */
+/* ===== BRAND WIDGET (clock center, text caption) ===== */
 function initBrandWidget(){
   const layer = document.getElementById('widget-layer');
   const wrap = document.createElement('div');
   wrap.className = 'brand-widget';
   wrap.innerHTML = `
     <img src="assets/brand-widget.png" alt="Invincible OS by PRON33R Universe">
-    <img class="brand-caption" src="assets/brand-caption.png" alt="litrelly doing anything a.t.p.">
+    <div class="brand-clock-overlay">
+      <div class="brand-time" id="brand-time">00:00</div>
+      <div class="brand-zone" id="brand-zone">UTC</div>
+    </div>
+    <div class="brand-caption-text">ANYTHING FOR MONEY</div>
   `;
   layer.appendChild(wrap);
 
@@ -81,8 +177,17 @@ const WM = {
     const app = APP_REGISTRY[appId];
     const win = document.createElement('div');
     win.className = 'window';
-    win.style.left = (60 + Object.keys(this.windows).length*30) + 'px';
-    win.style.top = (60 + Object.keys(this.windows).length*30) + 'px';
+
+    const offset = Object.keys(this.windows).length * 30;
+    const rawW = parseInt(app.width || '320', 10);
+    const rawH = parseInt(app.height || '240', 10);
+    let left = 60 + offset;
+    let top  = 60 + offset;
+    left = Math.min(left, Math.max(0, window.innerWidth - rawW));
+    top  = Math.min(top,  Math.max(0, window.innerHeight - rawH - 64));
+
+    win.style.left = left + 'px';
+    win.style.top  = top + 'px';
     win.style.width = app.width || '320px';
     win.style.height = app.height || '240px';
     win.innerHTML = `
@@ -134,7 +239,7 @@ const WM = {
       this.open(id);
       const el = this.windows[id].el;
       el.style.left = state[id].left;
-      el.style.top = state[id].top;
+      el.style.top  = state[id].top;
     }
   }
 };
@@ -208,19 +313,18 @@ Type "help" to see available commands.
   }
 };
 
-/* ===== DESKTOP ICONS ===== */
+/* ===== DESKTOP ICONS (PNG only, no emojis) ===== */
 function buildDesktopIcons(){
   const zone = document.getElementById('appsZone');
   const icons = {
-    terminal: { emoji:'🛠️', label:'Terminal' },
-    notes:    { emoji:'📝', label:'Notes' }
+    terminal: { label:'Terminal' },
+    notes:    { label:'Notes' }
   };
   for (const id in icons){
     const div = document.createElement('div');
     div.className = 'app-icon';
     div.innerHTML = `
-      <img src="assets/icons/${id}.png" class="icon-img" alt="${icons[id].label}"
-        onerror="this.outerHTML='<span class=icon-emoji>${icons[id].emoji}</span>'">
+      <img src="assets/icons/${id}.png" class="icon-img" alt="${icons[id].label}">
       <span class="label">${icons[id].label}</span>`;
     div.addEventListener('click', ()=> WM.open(id));
     zone.appendChild(div);
@@ -236,6 +340,7 @@ function initEverythingBtn(){
 
 /* ===== INIT ===== */
 window.addEventListener('DOMContentLoaded', ()=>{
+  initMatrixRain();
   initTheme();
   initBoot();
   buildDesktopIcons();
@@ -245,3 +350,4 @@ window.addEventListener('DOMContentLoaded', ()=>{
   setInterval(updateClock, 1000);
   WM.restoreState();
 });
+  
