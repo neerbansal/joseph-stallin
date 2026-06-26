@@ -1,1 +1,1 @@
-hey 
+HEY GUYZ!! I AM TRYNNA BUILD AN OS WITH SOME COMMUNITY STUFF ALONG SIDE SOME GAMES AND ALL THAT THO !! YOU CAN CONTACT ME AT proneer@faxx.qzz.io if you have any suggestions or all that?
