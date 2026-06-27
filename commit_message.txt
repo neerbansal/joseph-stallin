@@ -1,0 +1,8 @@
+feat: implement documentation, custom commands, and theming
+
+- Added dynamic documentation system powered by react-markdown
+- Overhauled terminal to parse custom commands (`/help`, `/about`, `/visit`, `/clear`, `/date`)
+- Implemented `/visit` popup to configure themes and fallback to Instagram link
+- Upgraded Roseline mascot with draggable interactions and random tsundere responses via AI mock interface
+- Prepared `src/kills/` folder structure for future interactive animations
+- Expanded floating dock with new utility links

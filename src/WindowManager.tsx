@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { TerminalApp } from "./apps/TerminalApp";
 import { NotesApp } from "./apps/NotesApp";
+import { DocsApp } from "./components/DocsApp";
 import { motion } from "framer-motion";
 
 interface AppInstance {
@@ -22,6 +23,8 @@ export function WindowManager({ openApps, closeApp }: WindowManagerProps) {
         return <TerminalApp />;
       case "notes":
         return <NotesApp />;
+      case "docs":
+        return <DocsApp />;
       default:
         return <div className="p-4 text-white">App not found</div>;
     }
@@ -33,6 +36,8 @@ export function WindowManager({ openApps, closeApp }: WindowManagerProps) {
         return "Terminal";
       case "notes":
         return "Notes";
+      case "docs":
+        return "Documentation";
       default:
         return "Unknown App";
     }

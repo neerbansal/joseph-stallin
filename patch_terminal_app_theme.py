@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+with open('src/apps/TerminalApp.tsx', 'r') as f:
+    content = f.read()
+
+new_content = """import React, { useEffect, useState } from "react";
 import { Terminal } from "@/components/ui/terminal";
 import { visitThemes } from "@/terminal/visitConfig";
 
@@ -34,3 +37,7 @@ export function TerminalApp() {
     </div>
   );
 }
+"""
+
+with open('src/apps/TerminalApp.tsx', 'w') as f:
+    f.write(new_content)

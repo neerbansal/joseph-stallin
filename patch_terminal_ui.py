@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import re
+
+with open('src/components/ui/terminal.tsx', 'r') as f:
+    content = f.read()
+
+# Replace the static typing implementation with an interactive one
+new_content = """import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface TerminalProps {
-  themeBackground?: string;
-  themeTextColor?: string;
   className?: string;
   onVisitCommand?: (query?: string) => void;
 }
 
 export function Terminal({
-  themeBackground = "bg-black",
-  themeTextColor = "text-white/80",
   className,
   onVisitCommand
 }: TerminalProps) {
@@ -87,8 +89,7 @@ export function Terminal({
     <div
       onClick={handleContainerClick}
       className={cn(
-        "w-full h-full mx-auto overflow-hidden flex flex-col relative",
-        themeBackground,
+        "w-full h-full mx-auto overflow-hidden bg-black flex flex-col relative",
         className
       )}
     >
@@ -100,7 +101,7 @@ export function Terminal({
       </div>
       <div
         ref={containerRef}
-        className={cn("flex-1 p-4 font-mono text-sm overflow-y-auto pb-12 cursor-text", themeTextColor)}
+        className="flex-1 p-4 font-mono text-sm overflow-y-auto text-white/80 pb-12 cursor-text"
       >
         <div className="mb-4 text-white/60">
           Welcome to WebOS Terminal. Type /help to see available commands.
@@ -146,3 +147,7 @@ export function Terminal({
     </div>
   );
 }
+"""
+
+with open('src/components/ui/terminal.tsx', 'w') as f:
+    f.write(new_content)

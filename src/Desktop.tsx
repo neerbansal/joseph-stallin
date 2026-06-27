@@ -9,8 +9,16 @@ import {
   IconNewSection,
   IconTerminal2,
   IconNote,
+  IconSearch,
+  IconBrandYoutube,
+  IconBrandInstagram,
+  IconBook,
 } from "@tabler/icons-react";
 import { WindowManager } from "./WindowManager";
+import { Roseline } from "./components/Roseline";
+import { VisitPopup } from "./components/VisitPopup";
+import { visitThemes, ThemeConfig } from "./terminal/visitConfig";
+import { useEffect } from "react";
 
 const APPS = {
   terminal: { title: "Terminal", icon: "/assets/terminal.png" },
@@ -19,6 +27,33 @@ const APPS = {
 
 export function Desktop() {
   const [openApps, setOpenApps] = useState<{ id: string; type: string }[]>([]);
+  const [isVisitOpen, setIsVisitOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<ThemeConfig>(visitThemes[0]);
+
+  useEffect(() => {
+    const handleVisitCommand = (e: CustomEvent) => {
+      const query = e.detail?.query?.trim();
+      if (query) {
+        const foundTheme = visitThemes.find(t => t.id === query);
+        if (foundTheme) {
+          applyTheme(foundTheme);
+          return;
+        }
+      }
+      setIsVisitOpen(true);
+    };
+
+    window.addEventListener('visit-command', handleVisitCommand as EventListener);
+    return () => {
+      window.removeEventListener('visit-command', handleVisitCommand as EventListener);
+    };
+  }, []);
+
+  const applyTheme = (theme: ThemeConfig) => {
+    setCurrentTheme(theme);
+    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
+  };
+
 
   const openApp = (type: string) => {
     setOpenApps((prev) => {
@@ -48,21 +83,24 @@ export function Desktop() {
       onClick: () => openApp("notes"),
     },
     {
-      title: "Aceternity UI",
-      icon: (
-        <img
-          src="https://assets.aceternity.com/logo-dark.png"
-          width={20}
-          height={20}
-          alt="Aceternity Logo"
-        />
-      ),
+      title: "Documentation",
+      icon: <IconBook className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      onClick: () => openApp("docs"),
+    },
+    {
+      title: "Search",
+      icon: <IconSearch className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
       href: "#",
     },
     {
-      title: "GitHub",
-      icon: <IconBrandGithub className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
-      href: "#",
+      title: "YouTube",
+      icon: <IconBrandYoutube className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      href: "https://youtube.com",
+    },
+    {
+      title: "Instagram",
+      icon: <IconBrandInstagram className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+      href: "https://instagram.com/duckiscutefr",
     },
   ];
 
@@ -85,10 +123,18 @@ export function Desktop() {
       {/* Window Manager */}
       <WindowManager openApps={openApps} closeApp={closeApp} />
 
+      {/* Roseline Mascot */}
+      <Roseline spriteUrl={currentTheme.roselineSprite} />
+
       {/* Floating Dock */}
       <div className="absolute bottom-0 w-full flex justify-center pb-8">
         <FloatingDock items={dockLinks} />
       </div>
+      <VisitPopup
+        isOpen={isVisitOpen}
+        onClose={() => setIsVisitOpen(false)}
+        onApplyTheme={applyTheme}
+      />
     </div>
   );
 }

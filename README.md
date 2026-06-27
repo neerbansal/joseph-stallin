@@ -1,32 +1,22 @@
-# React + TypeScript + Vite
+# WebOS Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React-based Web Operating System simulation.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Draggable Window Manager:** Built with Framer Motion, supporting apps like Terminal, Notes, and Documentation.
+- **Floating Dock:** Quick access to essential apps and links (Search, YouTube, Instagram).
+- **Interactive Terminal:** A fully functional terminal emulator supporting commands like `/help`, `/about`, `/visit`, `/clear`, and `/date`.
+- **Custom Theming via `/visit`:** A dynamic configuration system to update terminal themes and mascot sprites on the fly.
+- **Roseline Mascot:** A draggable companion that occasionally shares tsundere remarks.
+- **Dynamic Documentation System:** A Markdown-powered help system to easily read and write documentation inside the OS.
+- **Prepared Architecture:** Ready for future AI integrations and extensible animations ("kills").
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+- Vite
+- React
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- React Markdown
