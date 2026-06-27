@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/Desktop.tsx","./src/LandingPage.tsx","./src/WindowManager.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/apps/NotesApp.tsx","./src/apps/TerminalApp.tsx","./src/components/ui/floating-dock.tsx","./src/components/ui/terminal.tsx","./src/components/ui/webcam-pixel-grid.tsx","./src/lib/utils.ts"],"version":"6.0.3"}
