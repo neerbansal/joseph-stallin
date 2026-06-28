@@ -15,7 +15,7 @@ interface FloatingDockProps {
   mobileClassName?: string;
 }
 
-export function FloatingDock({ items, className, mobileClassName }: FloatingDockProps) {
+export function FloatingDock({ items, className, mobileClassName: _mobileClassName }: FloatingDockProps) {
   return (
     <div className={cn("fixed bottom-4 left-1/2 -translate-x-1/2 z-50 hidden md:block", className)}>
       <div className="flex gap-4 items-end bg-black/40 border border-white/10 p-2 rounded-2xl backdrop-blur-md">

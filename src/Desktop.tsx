@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { FloatingDock } from "@/components/ui/floating-dock";
-import { Terminal } from "@/components/ui/terminal";
+
 import {
   IconBrandGithub,
-  IconBrandX,
-  IconExchange,
+
+
   IconHome,
-  IconNewSection,
+
   IconTerminal2,
   IconNote,
 } from "@tabler/icons-react";

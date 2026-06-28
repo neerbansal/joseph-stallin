@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { TerminalApp } from "./apps/TerminalApp";
 import { NotesApp } from "./apps/NotesApp";
 import { motion } from "framer-motion";
